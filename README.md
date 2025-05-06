@@ -10,7 +10,7 @@ If you would like to cite our paper, please cite as follows:
 @article{medreason_dx,
   title={MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis},
   author={MedReason-Dx Team},
-  journal={ },
+  journal={https://github.com/imZHANGxikun/MedReasonDx_Benchmarking_Step_by_Step_Reasoning_of_Language_Models_in_Medical_Diagnosis},
   year={2025}
 }
 ```
