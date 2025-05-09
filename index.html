@@ -89,29 +89,13 @@ Recently, MedReason~\citep{wu2025medreason} was proposed to address the scarcity
 In this section, we detail our process for curating the data and the specifics of the dataset we collected. The dataset we curated consisted of two types: multiple-choice questions and open-ended questions. In the following, we develop a description of the process of curating each of these two types of data. 
 
 
+<h2>Figures</h2>
 
+<h3>Figure 1</h3>
+<img src="assets/figures/distribution_mcq.png" alt="MCQ" width="600">
 
-
-\begin{figure}[t]
-\centering
-
-\begin{minipage}[t]{0.98\textwidth}
-\centering
-\subfigure[]{
-    \includegraphics[width=6.5cm]{distribution_mcq.png}
-}
-\subfigure[]{
-    \includegraphics[width=6.5cm]{distribution_oeq.png}
-}
-\caption{t-SNE visualization of natural images and AI-generated images. 
-(a): \textcolor{red}{$\bullet$} and \textcolor{blue}{$\bullet$} are natural vs. AI-generated on the original model; 
-(b): \textcolor[rgb]{1, 0.7, 0.4}{$\bullet$} and \textcolor[rgb]{0,1,0}{$\bullet$} on the pruned model.}
-\label{t-SNE}
-\end{minipage}
-\hfill
-
-\vspace{-0.3cm}
-\end{figure}
+<h3>Figure 2</h3>
+<img src="assets/figures/distribution_oeq.png" alt="OEQ" width="600">
 
 
 
@@ -125,15 +109,10 @@ The data collection for our MedReason-Dx benchmark is designed to create a chall
 After finalizing the selection of challenging questions, we create the step-by-step answers and extract key points with the help of medical experts from diverse specialties. This approach allows for a comprehensive evaluation of the model's reasoning ability, focusing not only on the correctness of the final answer but also on the clarity and logic of the reasoning process itself. The step-by-step answers break down the reasoning into clear, logical steps, each representing a critical part of the decision-making process. The key points highlight the most important information, such as clinical findings or diagnostic considerations, necessary for reaching the correct diagnosis. These key points help ensure that the model's response covers all relevant aspects required for accurate medical decision-making. The goal of generating these steps and key points is to assess the reasoning process in detail, ensuring that the model's explanation is complete and logically sound. An example piece of data created is shown in Figure~\ref{example}.
 
 
-\begin{figure*}[h]
-  \centering
-  \includegraphics[width=0.9\textwidth,trim = 0 0 0 0 
- ,clip]{example.png}
- \vspace{-0.2cm}
-  \caption{As the model unlearns, the model's ability to represent natural and generated images decays at different rates. Dots of different colors represent features of different classes of images.}
-  \label{example}
-  \vspace{-0.3cm}
-\end{figure*}
+
+<h3>Figure 3: Example question-answer pair from the MedReason-Dx dataset</h3>
+<img src="assets/figures/example.png" alt="Example QA Pair" width="800">
+
 
 
 
