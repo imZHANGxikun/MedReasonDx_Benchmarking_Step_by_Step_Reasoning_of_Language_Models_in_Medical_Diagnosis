@@ -1,1 +1,55 @@
-<h1>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; }
+        p { text-align: justify; }
+        .abstract { background-color: #f0f0f0; padding: 20px; border-left: 5px solid #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</h1>
+    <p><strong>Authors:</strong> MedReason-Dx Team</p>
+    <div class="abstract">
+        <h2>Abstract</h2>
+
+      
+        <p>In high-stakes domains like medicine, <strong>how</strong> an AI arrives at an answer can be as critical as the answer itself. 
+        However, existing medical question answering benchmarks largely ignore the reasoning process, evaluating models only on final answer accuracy. 
+        This paper addresses the overlooked importance of reasoning path evaluation in medical AI. We introduce <strong>MedReason-Dx</strong>, 
+        a novel benchmark that assesses not just answers but the step-by-step reasoning behind them. MedReason-Dx provides expert-annotated 
+        step-by-step solutions for both multiple-choice and open-ended questions, spanning 24 medical specialties. 
+        By requiring models to produce and be evaluated on intermediate reasoning steps, our benchmark enables rigorous testing of interpretability 
+        and logical consistency in medical QA. We present the design of MedReason-Dx and outline diverse evaluation metrics that reward faithful reasoning. 
+        We hope this resource will advance the development of robust, interpretable medical decision support systems and foster research into large language 
+        models that can reason as well as they respond.</p>
+    </div>
+
+    <h2>Introduction</h2>
+    <p>Artificial intelligence systems for healthcare must not only deliver correct answers but also provide <em>justifiable reasoning</em>. 
+    In clinical decision support and medical question answering (QA), the reasoning path that leads to an answer is critical for trust and safety. 
+    A model that arrives at a diagnosis by flawed logic or guesswork poses significant risks, even if the final answer is correct. 
+    Conversely, a model that explains its reasoning can enable practitioners to verify each step, ensuring the conclusion is sound.</p>
+
+    <p>Despite this, most existing benchmarks in medical AI evaluate models solely on whether the final answer is right, with little or no assessment 
+    of the reasoning process. This gap is problematic in high-stakes domains: evaluating only end answers may overlook dangerous reasoning errors 
+    and fails to encourage the development of models that “think” in a human-like, transparent manner.</p>
+
+    <p>Recent advances in large language models (LLMs) and prompting techniques have brought reasoning to the forefront of AI research. 
+    In particular, chain-of-thought (CoT) prompting has demonstrated that LLMs can generate step-by-step solutions to complex problems, 
+    from math and logic puzzles to medical questions. These developments underscore an urgent need for benchmarks that can evaluate not just final 
+    accuracy but the <em>quality of reasoning</em> LLMs employ.</p>
+
+    <p>To address these challenges, we propose <strong>MedReason-Dx</strong>, a new benchmark expressly designed to evaluate step-by-step reasoning 
+    in medical question answering. Each question in MedReason-Dx is accompanied by a reasoning path crafted by medical experts, and the benchmark includes 
+    both multiple-choice and open-ended formats across 24 specialties. We introduce diverse metrics to assess reasoning quality, beyond final answer 
+    correctness, and aim to promote models that are not only accurate but also interpretable, trustworthy, and robust.</p>
+
+    <h2>For Full Paper</h2>
+    <p>The full content including methodology, benchmark structure, evaluation framework, and detailed results will be hosted on our GitHub repository.</p>
+</body>
+</html>
