@@ -81,5 +81,124 @@ Recently, MedReason~\citep{wu2025medreason} was proposed to address the scarcity
 </tbody>
 </table>
 
+
+
+<h2>Medical Benchmark with Step-wise evaluation</h2>
+
+<h3>Data curation</h3>
+In this section, we detail our process for curating the data and the specifics of the dataset we collected. The dataset we curated consisted of two types: multiple-choice questions and open-ended questions. In the following, we develop a description of the process of curating each of these two types of data. 
+
+
+
+
+
+\begin{figure}[t]
+\centering
+
+\begin{minipage}[t]{0.98\textwidth}
+\centering
+\subfigure[]{
+    \includegraphics[width=6.5cm]{distribution_mcq.png}
+}
+\subfigure[]{
+    \includegraphics[width=6.5cm]{distribution_oeq.png}
+}
+\caption{t-SNE visualization of natural images and AI-generated images. 
+(a): \textcolor{red}{$\bullet$} and \textcolor{blue}{$\bullet$} are natural vs. AI-generated on the original model; 
+(b): \textcolor[rgb]{1, 0.7, 0.4}{$\bullet$} and \textcolor[rgb]{0,1,0}{$\bullet$} on the pruned model.}
+\label{t-SNE}
+\end{minipage}
+\hfill
+
+\vspace{-0.3cm}
+\end{figure}
+
+
+
+<h3>Data curation for multiple-choice question</h3>
+
+
+
+
+The data collection for our MedReason-Dx benchmark is designed to create a challenging reasoning dataset that diverges from typical knowledge-based question-answer datasets. The objective is to curate a dataset where models are required to perform complex, multi-step reasoning to derive the correct answers, reflecting the intricate processes involved in real-world clinical diagnostics. To achieve this, we employed a rigorous data selection process that involved filtering questions from well-established medical datasets, which encompass real-world clinical cases across various medical disciplines. Each problem is associated with a detailed series of reasoning steps that mirror the diagnostic workflow, ensuring that the reasoning process is both comprehensive and contextually relevant. We define a set of 24 medical domains, derived from common hospital departments, including: "Cardiology", "Pulmonology", "Gastroenterology", "Nephrology", "Endocrinology", "Hematology", "Rheumatology", "Neurology", "Surgery", "Obstetrics and Gynecology", "Pediatrics", "Psychiatry", "Emergency Medicine", "Anesthesiology", "Radiology", "Otorhinolaryngology", "Ophthalmology", "Dermatology", "Urology", "Oncology", "Physical Medicine and Rehabilitation", "Nutrition", "Pain Management" and "Clinical Laboratory". The selection of questions prioritizes diversity in the types of clinical challenges and the reasoning methods required for problem-solving. This diversity encompasses a wide array of diagnostic tasks that span both common and rare clinical conditions. Questions are specifically chosen for their requirement of complex multi-step reasoning processes, including, but not limited to, physiological mechanism analysis, differential diagnosis, hypothesis testing, exclusionary reasoning, and the integration of cross-disciplinary knowledge. By focusing on the reasoning complexity and diversity, the dataset reflects the multifaceted nature of clinical decision-making and the diverse set of cognitive strategies employed by healthcare professionals in practice. The aim is to ensure that the dataset not only captures the breadth of medical knowledge but also challenges models to engage in higher-order reasoning reflective of real-world medical diagnostic scenarios
+
+After finalizing the selection of challenging questions, we create the step-by-step answers and extract key points with the help of medical experts from diverse specialties. This approach allows for a comprehensive evaluation of the model's reasoning ability, focusing not only on the correctness of the final answer but also on the clarity and logic of the reasoning process itself. The step-by-step answers break down the reasoning into clear, logical steps, each representing a critical part of the decision-making process. The key points highlight the most important information, such as clinical findings or diagnostic considerations, necessary for reaching the correct diagnosis. These key points help ensure that the model's response covers all relevant aspects required for accurate medical decision-making. The goal of generating these steps and key points is to assess the reasoning process in detail, ensuring that the model's explanation is complete and logically sound. An example piece of data created is shown in Figure~\ref{example}.
+
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.9\textwidth,trim = 0 0 0 0 
+ ,clip]{example.png}
+ \vspace{-0.2cm}
+  \caption{As the model unlearns, the model's ability to represent natural and generated images decays at different rates. Dots of different colors represent features of different classes of images.}
+  \label{example}
+  \vspace{-0.3cm}
+\end{figure*}
+
+
+
+<h3>Data curation for open-ended question</h3>
+
+Multiple-choice questions often simplify the difficulty of the questions and fail to accurately reflect real-world scenarios, as human doctors can't make diagnoses based on predefined options. Consequently, we further construct open-ended reasoning questions. 
+
+\begin{center}
+\fcolorbox{black}{yellow}{\parbox{13cm}{"Please revise the following multiple-choice question to an open-ended question:"}}
+\end{center}
+
+\begin{center}
+\fcolorbox{black}{yellow}{\parbox{13cm}{"You are a professional doctor, please remove the information about the wrong options from the diagnostic results based on the questions and diagnostic results given and keep only the correct results."}}
+\end{center}
+
+When rewriting the problem, we only change the last question in the problem to ensure minimal changes to the original problem. Again, we invite human experts to monitor this change to ensure that it is done correctly. Upon obtaining the open-ended questions and answers, we reformulate the answers in a STEP-BY-STEP format, similar to the approach used for multiple-choice questions. Additionally, we extract the key points from the answers to facilitate subsequent assessments.
+
+
+
+
+<h2>Evaluation</h2>
+
+As previously mentioned, in addition to emphasizing the accuracy of the final answer, we also place significant attention on the comprehensiveness of the reasoning process and the thoroughness with which the relevant keywords are captured during this process. In the following, we provide a detailed description of the evaluation metrics employed to assess these three critical aspects of our analysis.
+
+\textbf{Correctness of the final answer.} Firstly, in accordance with traditional evaluation methodologies, we assess the accuracy of the final answers provided by the model. For multiple-choice questions, we directly compare the option selected by the model with the correct one. For open-ended questions, we instruct the model to provide the answer in a specified format: "Please give your answer in the following format: "Therefore, the answer is $\backslash$box\{your answer\}." Then we use LLM to determine whether the given answer is equivalent to the correct answer and calculate accuracy.
+
+
+
+\textbf{Completeness and necessity of reasoning steps.} In addition to evaluating the correctness of the final answers, we also assess the completeness and necessity of the model’s reasoning process. While current evaluations of large medical models typically emphasize the correctness of the results, it is crucial to recognize that, in high-stakes domains such as medicine, the transparency and rationality of the model's reasoning process are equally important. This is because physicians rely on the reasoning behind the model’s conclusions to assess the reliability of the final results. Therefore, we also conduct a thorough evaluation of the model's reasoning process to ensure its robustness and interpretability.
+
+\textbf{Completeness of keywords.} In addition to assessing the model's reasoning process, we also evaluate the completeness of the keywords involved in its reasoning.
+
+
+<h2>Experiments</h2>
+In this section, we will show the detailed experimental setup, analyses, and results of different LLMs in our benchmark. The dataset is still being refined, and more results will be released soon. 
+
+<h3>Experimental Setup</h3>
+\textbf{Evaluation Models.} To provide a comprehensive benchmark, We conduct evaluations on 11 advanced LLMs, comprising 7 general LLMs and 4 medical LLMs, including DeepSeeK R1~\citep{guo2025deepseek}, DeepSeek V3~\citep{liu2024deepseek}, GPT-4o~\citep{gpt-4o}, o1-mini~\citep{o1-mini} and  Baichuan4-Turbo~\citep{yang2023baichuan}. It is important to note that our experiments are still ongoing and the results are being continuously refined, with additional evaluation data expected to be updated in the near future.
+
+\textbf{Implementation Details.} Following previous work~\citep{jiang2025mme}, we leverage two types of prompts to guide the model to give answers: chain-of-thought prompts~\citep{DBLP:conf/nips/Wei0SBIXCLZ22} and direct prompts.  Chain-of-thought prompts have the following format: \textit{'Give your answer in the following form with clear logic: Step1: Step2:.... . Therefore, the answer is \textbackslash box\{\}.'} and direct prompts have the following format: \textit{'Please answer the following question and end your answer in this format: Therefore, the answer is \textbackslash box\{\}.'}. When calling LLMs, the temperature is set to 0.7, Top-P is set to 0.9, and max tokens is set to 1000.
+
+<h3>Benchmarking Medical LLMs</h3>
+We benchmarked several advanced language models on the MedReason-Dx dataset under two prompting settings: Chain-of-Thought (CoT) and Direct Answering, across both multiple-choice and open-ended formats. Overall, DeepSeek-R1 achieved the highest performance in the multiple-choice setting, with CoT prompting slightly outperforming direct answering (65.03\% vs. 64.36\%). However, in the open-ended setting, its performance reversed, with direct prompting yielding higher accuracy (42.39\%) than CoT (40.14\%). DeepSeek-V3 showed a similar trend with modest gains from direct answering in open-ended questions (37.02\% vs. 33.56\%). Interestingly, GPT-4o exhibited the largest gap in favor of direct prompting for open-ended questions (47.70\% vs. 37.72\%), while maintaining comparable results in multiple-choice settings. o1-mini demonstrated relatively balanced performance across settings, with a slight edge for direct prompting in both question types. In contrast, Baichuan4-Turbo underperformed across all configurations, with particularly low scores on open-ended questions, indicating a significant gap in step-by-step reasoning capabilities compared to stronger models. These results suggest that while CoT prompting can provide marginal gains in structured formats, direct answering may be more effective in complex open-ended clinical scenarios, particularly for stronger LLMs.
+
+
+<h2>Table 2: Benchmarking the accuracy (%) performance of existing models</h2>
+<table border="1" cellspacing="0" cellpadding="5">
+<thead>
+<tr>
+  <th>Model</th><th>MCQ CoT</th><th>MCQ Direct</th><th>OEQ CoT</th><th>OEQ Direct</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>DeepSeeK R1</td><td>65.03</td><td>64.36</td><td>40.14</td><td>42.39</td></tr>
+<tr><td>DeepSeeK V3</td><td>60.47</td><td>59.79</td><td>33.56</td><td>37.02</td></tr>
+<tr><td>GPT-4o</td><td>58.28</td><td>59.12</td><td>37.72</td><td>47.70</td></tr>
+<tr><td>o1-mini</td><td>60.47</td><td>62.67</td><td>37.37</td><td>41.18</td></tr>
+<tr><td>Baichuan4-Turbo</td><td>46.62</td><td>42.74</td><td>27.16</td><td>28.37</td></tr>
+</tbody>
+</table>
+
+    
+<h2>Conclusion}</h2>
+In this work, we introduce MedReason-Dx, a benchmark designed to evaluate the quality of reasoning in medical question answering, beyond mere answer accuracy. MedReason-Dx incorporates expert-annotated, step-by-step rationales across diverse medical domains, enabling systematic assessment of logical coherence, interpretability, and clinical reasoning reliability in large language models. By addressing key limitations in existing medical AI evaluation practices, our benchmark provides a robust foundation for developing models that reason transparently and reliably.
+
+    
 </body>
 </html>
