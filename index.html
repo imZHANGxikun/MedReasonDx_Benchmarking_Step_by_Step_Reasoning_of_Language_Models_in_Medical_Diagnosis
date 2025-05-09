@@ -1,183 +1,1093 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-    <meta charset="UTF-8">
-    <title>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        h1 { color: #2c3e50; }
-        h2 { color: #34495e; }
-        p { text-align: justify; }
-        .abstract { background-color: #f0f0f0; padding: 20px; border-left: 5px solid #2980b9; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="MedReason-Dx Team" />
+  <title>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    div.abstract {
+      margin: 2em 2em 2em 2em;
+      text-align: left;
+      font-size: 85%;
+    }
+    div.abstract-title {
+      font-weight: bold;
+      text-align: center;
+      padding: 0;
+      margin-bottom: 0.5em;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
 </head>
 <body>
-    <h1>MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis</h1>
-    <p><strong>Authors:</strong> MedReason-Dx Team</p>
-    <div class="abstract">
-        <h2>Abstract</h2>
-
-      
-        <p>In high-stakes domains like medicine, <strong>how</strong> an AI arrives at an answer can be as critical as the answer itself. 
-        However, existing medical question answering benchmarks largely ignore the reasoning process, evaluating models only on final answer accuracy. 
-        This paper addresses the overlooked importance of reasoning path evaluation in medical AI. We introduce <strong>MedReason-Dx</strong>, 
-        a novel benchmark that assesses not just answers but the step-by-step reasoning behind them. MedReason-Dx provides expert-annotated 
-        step-by-step solutions for both multiple-choice and open-ended questions, spanning 24 medical specialties. 
-        By requiring models to produce and be evaluated on intermediate reasoning steps, our benchmark enables rigorous testing of interpretability 
-        and logical consistency in medical QA. We present the design of MedReason-Dx and outline diverse evaluation metrics that reward faithful reasoning. 
-        We hope this resource will advance the development of robust, interpretable medical decision support systems and foster research into large language 
-        models that can reason as well as they respond.</p>
-    </div>
-
-    <h2>Introduction</h2>
-    <p>Artificial intelligence systems for healthcare must not only deliver correct answers but also provide <em>justifiable reasoning</em>. In clinical decision support and medical question answering (QA), the reasoning path that leads to an answer is critical for trust and safety. A model that arrives at a diagnosis by flawed logic or guesswork poses significant risks, even if the final answer is correct. Conversely, a model that explains its reasoning can enable practitioners to verify each step, ensuring the conclusion is sound. Despite this, most existing benchmarks in medical AI evaluate models solely on whether the final answer is right, with little or no assessment of the reasoning process. This gap is problematic in high-stakes domains: evaluating only end answers may overlook dangerous reasoning errors and fails to encourage the development of models that ``think'' in a human-like, transparent manner. Recent advances in large language models (LLMs) and prompting techniques have brought reasoning to the forefront of AI research. In particular, \textit{chain-of-thought} (CoT) prompting has demonstrated that LLMs can generate step-by-step solutions to complex problems, from math and logic puzzles to medical questions. By prompting models to articulate intermediate steps, researchers have achieved improved performance on challenging tasks and gained insight into model decision-making. For example, state-of-the-art medical LLMs can now produce explanations or rationales alongside their answers, showcasing the potential of AI to handle intricate clinical reasoning. These developments underscore an urgent need for benchmarks that can evaluate not just final accuracy but the <em>quality of reasoning</em> LLMs employ. If a model is prompted to reason but we lack ground truth reasoning paths for comparison, we cannot rigorously assess whether the model’s reasoning is correct, complete, or clinically valid. Several medical QA datasets and benchmarks have emerged, yet they predominantly focus on answer correctness. Standard benchmarks drawn from medical exams (e.g., USMLE-style question banks, MedQA and MedMCQA) and research datasets like PubMedQA have driven progress in factual recall and question answering. Some of these resources include a short explanation or reference for the answer, but they do not provide a detailed, stepwise reasoning chain that could be used to evaluate a model’s thought process. In other words, existing benchmarks treat reasoning as an implicit skill, not an explicit target of evaluation. A model might earn full marks by selecting the correct option in a multiple-choice question, while in reality it could have arrived at that answer via incorrect assumptions or lucky guesswork. Conversely, a model might demonstrate mostly correct reasoning and make a minor error at the final step, but current benchmarks would simply mark the entire answer as wrong, offering no credit for nor analysis of the model’s reasoning ability. This limitation hampers the development of robust medical AI: it is difficult to discern whether improvements in accuracy are due to better reasoning or just better pattern matching, and it provides no incentive for models to output interpretable solutions. To address these challenges, we propose <strong>MedReason-Dx</strong>, a new benchmark expressly designed to evaluate chain-of-thought reasoning in medical question answering. MedReason-Dx (where “CoT” denotes Chain-of-Thought) introduces several key innovations to the evaluation of medical AI: </p>
-
+<header id="title-block-header">
+<h1 class="title">MedReason-Dx: Benchmarking Step-by-Step Reasoning of
+Language Models in Medical Diagnosis</h1>
+<p class="author">MedReason-Dx Team</p>
+<div class="abstract">
+<div class="abstract-title">Abstract</div>
+<p>In high-stakes domains like medicine, <strong>how</strong> an AI
+arrives at an answer can be as critical as the answer itself. However,
+existing medical question answering benchmarks largely ignore the
+reasoning process, evaluating models only on final answer accuracy. This
+paper addresses the overlooked importance of reasoning path evaluation
+in medical AI. We introduce <strong>MedReason-Dx</strong>, a novel
+benchmark that assesses not just answers but the step-by-step reasoning
+behind them. MedReason-Dx provides expert-annotated step-by-step
+solutions for both multiple-choice and open-ended questions, spanning 24
+medical specialties. By requiring models to produce and be evaluated on
+intermediate reasoning steps, our benchmark enables rigorous testing of
+interpretability and logical consistency in medical QA. We present the
+design of MedReason-Dx and outline diverse evaluation metrics that
+reward faithful reasoning. We hope this resource will advance the
+development of robust, interpretable medical decision support systems
+and foster research into large language models that can reason as well
+as they respond.</p>
+</div>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p>Artificial intelligence systems for healthcare must not only deliver
+correct answers but also provide <em>justifiable reasoning</em>. In
+clinical decision support and medical question answering (QA), the
+reasoning path that leads to an answer is critical for trust and safety.
+A model that arrives at a diagnosis by flawed logic or guesswork poses
+significant risks, even if the final answer is correct. Conversely, a
+model that explains its reasoning can enable practitioners to verify
+each step, ensuring the conclusion is sound. Despite this, most existing
+benchmarks in medical AI evaluate models solely on whether the final
+answer is right, with little or no assessment of the reasoning process.
+This gap is problematic in high-stakes domains: evaluating only end
+answers may overlook dangerous reasoning errors and fails to encourage
+the development of models that “think” in a human-like, transparent
+manner. Recent advances in large language models (LLMs) and prompting
+techniques have brought reasoning to the forefront of AI research. In
+particular, <em>chain-of-thought</em> (CoT) prompting has demonstrated
+that LLMs can generate step-by-step solutions to complex problems, from
+math and logic puzzles to medical questions. By prompting models to
+articulate intermediate steps, researchers have achieved improved
+performance on challenging tasks and gained insight into model
+decision-making. For example, state-of-the-art medical LLMs can now
+produce explanations or rationales alongside their answers, showcasing
+the potential of AI to handle intricate clinical reasoning. These
+developments underscore an urgent need for benchmarks that can evaluate
+not just final accuracy but the <em>quality of reasoning</em> LLMs
+employ. If a model is prompted to reason but we lack ground truth
+reasoning paths for comparison, we cannot rigorously assess whether the
+model’s reasoning is correct, complete, or clinically valid. Several
+medical QA datasets and benchmarks have emerged, yet they predominantly
+focus on answer correctness. Standard benchmarks drawn from medical
+exams (e.g., USMLE-style question banks, MedQA and MedMCQA) and research
+datasets like PubMedQA have driven progress in factual recall and
+question answering. Some of these resources include a short explanation
+or reference for the answer, but they do not provide a detailed,
+stepwise reasoning chain that could be used to evaluate a model’s
+thought process. In other words, existing benchmarks treat reasoning as
+an implicit skill, not an explicit target of evaluation. A model might
+earn full marks by selecting the correct option in a multiple-choice
+question, while in reality it could have arrived at that answer via
+incorrect assumptions or lucky guesswork. Conversely, a model might
+demonstrate mostly correct reasoning and make a minor error at the final
+step, but current benchmarks would simply mark the entire answer as
+wrong, offering no credit for nor analysis of the model’s reasoning
+ability. This limitation hampers the development of robust medical AI:
+it is difficult to discern whether improvements in accuracy are due to
+better reasoning or just better pattern matching, and it provides no
+incentive for models to output interpretable solutions. To address these
+challenges, we propose <strong>MedReason-Dx</strong>, a new benchmark
+expressly designed to evaluate chain-of-thought reasoning in medical
+question answering. MedReason-Dx (where “CoT” denotes Chain-of-Thought)
+introduces several key innovations to the evaluation of medical AI:</p>
 <ul>
-  <li><strong>Expert-annotated reasoning chains:</strong> Each question in MedReason-Dx is accompanied by a step-by-step solution path crafted by medical experts. These reasoning chains detail the logical steps required to arrive at the correct answer, including relevant clinical facts, intermediate inferences, and elimination of distractors in the case of multiple-choice items. This provides a gold-standard trace of correct reasoning against which model-generated solutions can be compared. </li>
-  <li><strong>Diverse question formats and topics:</strong> Our benchmark covers a broad spectrum of medical knowledge. It includes both multiple-choice questions (with several answer options) and open-ended questions that require free-form answers, ensuring that models are tested on various response formats. The questions span 24 medical specialties, ranging from internal medicine and cardiology to pediatrics, surgery, and more. This diversity reflects the real-world breadth of medical practice and ensures that the benchmark evaluates reasoning across different sub-domains and problem types (diagnosis, treatment decisions, biomedical mechanism explanations, etc.). </li>
-  <li><strong>Evaluation metrics for reasoning quality:</strong> MedReason-Dx departs from traditional single-metric evaluation by introducing multiple criteria to assess model performance. In addition to standard answer accuracy, we define metrics that measure the fidelity of a model’s reasoning to the expert-provided chain. For instance, we evaluate whether the model’s reasoning covers the same key steps or medical facts as the reference solution, and whether the logical progression is sound. This could involve step-wise accuracy scoring, similarity measures between generated and reference reasoning, and expert review of reasoning coherence. By quantifying reasoning quality, the benchmark encourages models that are not only correct, but \emph{correct for the right reasons}. </li>
-  <li><strong>Interpretability and robustness focus:</strong> By requiring and evaluating intermediate reasoning, MedReason-Dx places interpretability at the core of model assessment. This is especially crucial for medical AI systems that clinicians need to trust. A model that can articulate a valid reasoning chain is inherently more transparent and easier to debug than one that only outputs an answer. Furthermore, focusing on reasoning helps reveal when a model’s knowledge is superficial. We anticipate that models performing well on MedReason-Dx will demonstrate greater robustness, as they must handle complex multi-step problems in a principled way rather than relying on shallow cues. Our benchmark thus serves as a stress test for genuine reasoning ability in medical contexts. </li>
-</ul>  
+<li><p><strong>Expert-annotated reasoning chains:</strong> Each question
+in MedReason-Dx is accompanied by a step-by-step solution path crafted
+by medical experts. These reasoning chains detail the logical steps
+required to arrive at the correct answer, including relevant clinical
+facts, intermediate inferences, and elimination of distractors in the
+case of multiple-choice items. This provides a gold-standard trace of
+correct reasoning against which model-generated solutions can be
+compared.</p></li>
+<li><p><strong>Diverse question formats and topics:</strong> Our
+benchmark covers a broad spectrum of medical knowledge. It includes both
+multiple-choice questions (with several answer options) and open-ended
+questions that require free-form answers, ensuring that models are
+tested on various response formats. The questions span 24 medical
+specialties, ranging from internal medicine and cardiology to
+pediatrics, surgery, and more. This diversity reflects the real-world
+breadth of medical practice and ensures that the benchmark evaluates
+reasoning across different sub-domains and problem types (diagnosis,
+treatment decisions, biomedical mechanism explanations, etc.).</p></li>
+<li><p><strong>Evaluation metrics for reasoning quality:</strong>
+MedReason-Dx departs from traditional single-metric evaluation by
+introducing multiple criteria to assess model performance. In addition
+to standard answer accuracy, we define metrics that measure the fidelity
+of a model’s reasoning to the expert-provided chain. For instance, we
+evaluate whether the model’s reasoning covers the same key steps or
+medical facts as the reference solution, and whether the logical
+progression is sound. This could involve step-wise accuracy scoring,
+similarity measures between generated and reference reasoning, and
+expert review of reasoning coherence. By quantifying reasoning quality,
+the benchmark encourages models that are not only correct, but
+<em>correct for the right reasons</em>.</p></li>
+<li><p><strong>Interpretability and robustness focus:</strong> By
+requiring and evaluating intermediate reasoning, MedReason-Dx places
+interpretability at the core of model assessment. This is especially
+crucial for medical AI systems that clinicians need to trust. A model
+that can articulate a valid reasoning chain is inherently more
+transparent and easier to debug than one that only outputs an answer.
+Furthermore, focusing on reasoning helps reveal when a model’s knowledge
+is superficial. We anticipate that models performing well on
+MedReason-Dx will demonstrate greater robustness, as they must handle
+complex multi-step problems in a principled way rather than relying on
+shallow cues. Our benchmark thus serves as a stress test for genuine
+reasoning ability in medical contexts.</p></li>
+</ul>
+<p>In summary, MedReason-Dx is the first benchmark to comprehensively
+target reasoning path evaluation in medical QA. It offers the community
+a testbed to develop and rigorously vet models that aim to be not just
+answer engines, but reliable reasoning assistants for healthcare. We
+describe the construction of MedReason-Dx, including the data collection
+and expert annotation process, and provide an analysis of its contents.
+We also outline an evaluation framework and baseline results using
+current LLMs (without revealing any performance outcomes here). By
+emphasizing <em>how</em> answers are derived, our work addresses a
+critical gap for high-stakes AI: the need for systems whose decisions
+can be inspected and trusted. We believe MedReason-Dx will facilitate
+research into interpretable and robust medical AI, ultimately
+contributing to safer and more effective clinical decision support
+tools.</p>
+<h1 id="related-works">Related Works</h1>
+<h2 id="medical-llms">Medical LLMs</h2>
+<p>The evolution of medical large language models (Med-LLMs) has led to
+advancements in model architectures, training paradigms, and
+domain-specific adaptations, enabling applications in information
+extraction, clinical decision support, dialogue systems, and multimodal
+medical AI.</p>
+<p>Early Med-LLMs, such as BioBERT <span class="citation"
+data-cites="lee2020biobert">(Lee et al. 2020)</span> and
+PubMedBERT <span class="citation" data-cites="gu2021domain">(Gu et al.
+2021)</span>, were trained on extensive biomedical literature and PubMed
+abstracts, excelling in tasks like named entity recognition, relation
+extraction, and text classification. Models such as ClinicalT5 <span
+class="citation" data-cites="lu2022clinicalt5">(Lu, Dou, and Nguyen
+2022)</span> and GatorTron <span class="citation"
+data-cites="yang2022gatortron">(X. Yang et al. 2022)</span> extend this
+capability to clinical text summarization and report generation, while
+Codex-Med <span class="citation" data-cites="lievin2024can">(Liévin et
+al. 2024)</span> specializes in structured medical documentation.
+Galactica <span class="citation"
+data-cites="taylor2022galactica">(Taylor et al. 2022)</span>, designed
+for scientific and medical applications, enhances literature analysis
+and information retrieval.</p>
+<p>Recent models incorporate instruction fine-tuning (IFT) and
+reinforcement learning from human feedback (RLHF) to improve the
+accuracy of medical text generation and knowledge extraction.
+Med-PaLM <span class="citation" data-cites="singhal2023large">(Singhal
+et al. 2023)</span> and Med-PaLM 2 <span class="citation"
+data-cites="singhal2025toward">(Singhal et al. 2025)</span> exemplify
+this trend, refining medical question answering and clinical
+decision-making. Med-Alpaca <span class="citation"
+data-cites="han2023medalpaca">(Han et al. 2023)</span> further
+demonstrates the adaptability of fine-tuned language models for
+specialized healthcare applications. Meanwhile, GatorTronGPT <span
+class="citation" data-cites="peng2023study">(Peng et al. 2023)</span>
+builds on the GatorTron architecture with targeted fine-tuning,
+enhancing its precision in medical report generation. Conversational AI
+models like ChatDoctor <span class="citation"
+data-cites="li2023chatdoctor">(Y. Li et al. 2023)</span> is tailored for
+virtual medical consultations, offering patient triage assistance and
+personalized recommendations.</p>
+<p>Beyond these, several Med-LLMs focus on domain-specific adaptations.
+PMC-LLaMA <span class="citation" data-cites="wu2023pmc">(C. Wu et al.
+2023)</span> enhances biomedical literature processing, aiding both
+academic research and clinical applications. GPT-4-Med <span
+class="citation" data-cites="nori2023capabilities">(Nori et al.
+2023)</span>, a refined adaptation of GPT-4, excels in complex clinical
+text processing and high-quality medical content generation. In the
+field of Traditional Chinese Medicine (TCM), models like Taiyi-LLM <span
+class="citation" data-cites="luo2024taiyi">(Luo et al. 2024)</span>, and
+Zhongjing <span class="citation" data-cites="yang2024zhongjing">(S. Yang
+et al. 2024)</span> integrate classical TCM literature with modern
+medical insights, supporting diagnosis and treatment planning.
+Additionally, advancements in multilingual and multimodal medical models
+have broadened AI’s applicability in global healthcare. HuatuoGPT <span
+class="citation" data-cites="zhang2023huatuogpt">(Zhang et al.
+2023)</span> and its successor HuatuoGPT-II <span class="citation"
+data-cites="chen2023huatuogpt">(Chen et al. 2023)</span> leverage
+expanded datasets and optimized architectures to improve clinical report
+generation and diagnostic decision support. Med-Flamingo <span
+class="citation" data-cites="moor2023med">(Moor et al. 2023)</span>
+extends Med-LLM capabilities to multimodal medical tasks, integrating
+textual and visual information. Med-Gemini <span class="citation"
+data-cites="saab2024capabilities">(Saab et al. 2024)</span>, a bilingual
+model, facilitates cross-lingual medical communication, promoting
+international healthcare collaboration.</p>
+<p>These advancements underscore the ongoing evolution of Med-LLMs,
+enhancing their ability to process complex medical language, integrate
+multimodal data, and support diverse healthcare applications. As these
+models continue to evolve, they hold the potential to significantly
+improve clinical decision-making, personalized medicine, and
+cross-cultural medical communication.</p>
+<h2 id="medical-benchmarks">Medical Benchmarks</h2>
+<p>The development of diverse and standardized datasets, along with
+robust evaluation platforms, is essential for advancing AI applications
+in the medical domain. Existing research in this area can be broadly
+categorized into two main directions: (1) datasets tailored for various
+medical AI tasks and (2) automated benchmarks designed to assess the
+clinical capabilities of large models.</p>
+<p>The first category consists of datasets that support tasks such as
+information extraction, question answering, text generation, and natural
+language inference. For instance, datasets like GENIA <span
+class="citation" data-cites="kim2003genia">(Kim et al. 2003)</span>,
+CADEC <span class="citation" data-cites="karimi2015cadec">(Karimi et al.
+2015)</span>, and BC5CDR <span class="citation"
+data-cites="li2016biocreative">(Jiao Li et al. 2016)</span> are widely
+used for named entity recognition, relation extraction, and event
+detection across biomedical literature and clinical records. Meanwhile,
+MedQA <span class="citation" data-cites="jin2021disease">(D. Jin et al.
+2021)</span>, PubMedQA <span class="citation"
+data-cites="jin2019pubmedqa">(Q. Jin et al. 2019)</span>, CMCQA <span
+class="citation" data-cites="xia2022lingyi">(Xia et al. 2022)</span>,
+and Huatuo-26M <span class="citation"
+data-cites="li2023huatuo">(Jianquan Li et al. 2023)</span> have been
+developed to evaluate models’ abilities in medical knowledge retrieval,
+clinical reasoning, and diagnostic decision-making. Additionally,
+datasets such as MIMIC-III <span class="citation"
+data-cites="johnson2016mimic">(Johnson et al. 2016)</span>,
+MIMIC-CXR <span class="citation" data-cites="johnson2019mimic">(Johnson
+et al. 2019)</span>, HealthSearchQA <span class="citation"
+data-cites="singhal2023large">(Singhal et al. 2023)</span>, and
+CORD-19 <span class="citation" data-cites="wang2020cord">(Wang et al.
+2020)</span> facilitate tasks like clinical report generation,
+summarization, and case-based discussions. In the natural language
+inference domain, MedNLI <span class="citation"
+data-cites="romanov2018lessons">(Romanov and Shivade 2018)</span>
+provides a benchmark for understanding logical relationships in medical
+texts. Recently, MedReason <span class="citation"
+data-cites="wu2025medreason">(J. Wu et al. 2025)</span> was proposed to
+address the scarcity of high-quality, step-by-step reasoning data in the
+medical domain. Unlike datasets distilled directly from general-purpose
+LLMs, MedReason constructs 32,682 question–answer pairs with detailed
+Chain-of-Thought explanations, leveraging a structured medical knowledge
+graph to extract and guide the reasoning paths. These reasoning chains
+are factually grounded and validated through both automated answer
+checking and expert review by medical professionals from diverse
+specialties.</p>
+<p>The second category focuses on automated benchmarks for evaluating
+large medical models, reducing reliance on expert-driven manual
+assessments. MedBench <span class="citation"
+data-cites="cai2024medbench">(Cai et al. 2024)</span> provides a broad
+evaluation platform with 40,041 questions covering various medical
+fields. AutoEval <span class="citation"
+data-cites="liao2023automatic">(Liao et al. 2023)</span> reformats USMLE
+questions into multi-turn dialogues, assessing models based on
+information coverage and task accuracy. LLM-Mini-CEX <span
+class="citation" data-cites="shi2023llm">(Shi et al. 2023)</span>
+leverages patient simulators and ChatGPT to evaluate diagnostic dialogue
+quality. MedGPTEval <span class="citation"
+data-cites="xu2023medgpteval">(Xu et al. 2023)</span> integrates Chinese
+medical datasets and public benchmarks, using 16 expert-refined
+indicators to measure professional competence. LLM-Human
+Evaluation <span class="citation" data-cites="chiang2023can">(Chiang and
+Lee 2023)</span> examines automated assessment feasibility, showing
+alignment with human evaluators in adversarial and open-ended tasks.
+These frameworks systematically measure model performance, lower
+assessment costs, and support medical AI optimization.</p>
 
-    <h2>Related Works</h2>
-    <h3>Medical LLMs</h3>
-    <p>The evolution of medical large language models (Med-LLMs) has led to advancements in model architectures, training paradigms, and domain-specific adaptations, enabling applications in information extraction, clinical decision support, dialogue systems, and multimodal medical AI.
 
-<p>Early Med-LLMs, such as BioBERT~\citep{lee2020biobert} and PubMedBERT~\citep{gu2021domain}, were trained on extensive biomedical literature and PubMed abstracts, excelling in tasks like named entity recognition, relation extraction, and text classification. Models such as ClinicalT5~\citep{lu2022clinicalt5} and GatorTron~\citep{yang2022gatortron} extend this capability to clinical text summarization and report generation, while Codex-Med~\citep{lievin2024can} specializes in structured medical documentation. Galactica~\citep{taylor2022galactica}, designed for scientific and medical applications, enhances literature analysis and information retrieval.</p>
-
-<p>Recent models incorporate instruction fine-tuning (IFT) and reinforcement learning from human feedback (RLHF) to improve the accuracy of medical text generation and knowledge extraction. Med-PaLM~\citep{singhal2023large} and Med-PaLM 2~\citep{singhal2025toward} exemplify this trend, refining medical question answering and clinical decision-making. Med-Alpaca~\citep{han2023medalpaca} further demonstrates the adaptability of fine-tuned language models for specialized healthcare applications. Meanwhile, GatorTronGPT~\citep{peng2023study} builds on the GatorTron architecture with targeted fine-tuning, enhancing its precision in medical report generation. Conversational AI models like ChatDoctor~\citep{li2023chatdoctor} is tailored for virtual medical consultations, offering patient triage assistance and personalized recommendations.</p>
-
-<p>Beyond these, several Med-LLMs focus on domain-specific adaptations. PMC-LLaMA~\citep{wu2023pmc} enhances biomedical literature processing, aiding both academic research and clinical applications. GPT-4-Med~\citep{nori2023capabilities}, a refined adaptation of GPT-4, excels in complex clinical text processing and high-quality medical content generation.
-In the field of Traditional Chinese Medicine (TCM), models like Taiyi-LLM~\citep{luo2024taiyi}, and Zhongjing~\citep{yang2024zhongjing} integrate classical TCM literature with modern medical insights, supporting diagnosis and treatment planning. 
-Additionally, advancements in multilingual and multimodal medical models have broadened AI's applicability in global healthcare. HuatuoGPT~\citep{zhang2023huatuogpt} and its successor HuatuoGPT-II~\citep{chen2023huatuogpt} leverage expanded datasets and optimized architectures to improve clinical report generation and diagnostic decision support. Med-Flamingo~\citep{moor2023med} extends Med-LLM capabilities to multimodal medical tasks, integrating textual and visual information. Med-Gemini~\citep{saab2024capabilities}, a bilingual model, facilitates cross-lingual medical communication, promoting international healthcare collaboration.</p>
-
-<p>These advancements underscore the ongoing evolution of Med-LLMs, enhancing their ability to process complex medical language, integrate multimodal data, and support diverse healthcare applications. As these models continue to evolve, they hold the potential to significantly improve clinical decision-making, personalized medicine, and cross-cultural medical communication.</p>
-
-<h3>Medical Benchmarks</h3>
-<p>The development of diverse and standardized datasets, along with robust evaluation platforms, is essential for advancing AI applications in the medical domain. Existing research in this area can be broadly categorized into two main directions: (1) datasets tailored for various medical AI tasks and (2) automated benchmarks designed to assess the clinical capabilities of large models.</p>
-
-<p>The first category consists of datasets that support tasks such as information extraction, question answering, text generation, and natural language inference. For instance, datasets like GENIA~\citep{kim2003genia}, CADEC~\citep{karimi2015cadec}, and BC5CDR~\citep{li2016biocreative} are widely used for named entity recognition, relation extraction, and event detection across biomedical literature and clinical records. Meanwhile, MedQA~\citep{jin2021disease}, PubMedQA~\citep{jin2019pubmedqa}, CMCQA~\citep{xia2022lingyi}, and Huatuo-26M~\citep{li2023huatuo} have been developed to evaluate models' abilities in medical knowledge retrieval, clinical reasoning, and diagnostic decision-making. Additionally, datasets such as MIMIC-III~\citep{johnson2016mimic}, MIMIC-CXR~\citep{johnson2019mimic}, HealthSearchQA~\citep{singhal2023large}, and CORD-19~\citep{wang2020cord} facilitate tasks like clinical report generation, summarization, and case-based discussions. In the natural language inference domain, MedNLI~\citep{romanov2018lessons} provides a benchmark for understanding logical relationships in medical texts.
-Recently, MedReason~\citep{wu2025medreason} was proposed to address the scarcity of high-quality, step-by-step reasoning data in the medical domain. Unlike datasets distilled directly from general-purpose LLMs, MedReason constructs 32,682 question–answer pairs with detailed Chain-of-Thought explanations, leveraging a structured medical knowledge graph to extract and guide the reasoning paths. These reasoning chains are factually grounded and validated through both automated answer checking and expert review by medical professionals from diverse specialties.</p>
-
-<p>The second category focuses on automated benchmarks for evaluating large medical models, reducing reliance on expert-driven manual assessments. MedBench~\citep{cai2024medbench} provides a broad evaluation platform with 40,041 questions covering various medical fields. AutoEval~\citep{liao2023automatic} reformats USMLE questions into multi-turn dialogues, assessing models based on information coverage and task accuracy. LLM-Mini-CEX~\citep{shi2023llm} leverages patient simulators and ChatGPT to evaluate diagnostic dialogue quality. MedGPTEval~\citep{xu2023medgpteval} integrates Chinese medical datasets and public benchmarks, using 16 expert-refined indicators to measure professional competence. LLM-Human Evaluation~\citep{chiang2023can} examines automated assessment feasibility, showing alignment with human evaluators in adversarial and open-ended tasks. These frameworks systematically measure model performance, lower assessment costs, and support medical AI optimization.</p>  
-
-<h2>Table 1: Comparison with existing Medical QA benchmarks</h2>
-<table border="1" cellspacing="0" cellpadding="5">
+<div class="table*">
+<table>
+  <caption>Table 1: Comparison with existing Medical QA benchmarks</caption>
 <thead>
 <tr>
-  <th>Benchmark</th><th>CoT Eval</th><th># Domains</th><th>Reasoning Intensive</th><th>MCQ</th><th>OEQ</th><th>Expert Annotation</th>
+<th style="text-align: left;">Benchmark</th>
+<th style="text-align: center;">CoT Evaluation</th>
+<th style="text-align: center;">No. Domains</th>
+<th style="text-align: center;">reasoning intensive</th>
+<th style="text-align: center;">MCQ</th>
+<th style="text-align: center;">OEQ</th>
+<th style="text-align: center;">Expert Annotation</th>
 </tr>
 </thead>
 <tbody>
-<tr><td>MMedBench</td><td>✘</td><td>21</td><td>✔</td><td>✔</td><td>✘</td><td>✔</td></tr>
-<tr><td>MedQA</td><td>✘</td><td>-</td><td>✘</td><td>✔</td><td>✘</td><td>✘</td></tr>
-<tr><td>MedMCQA</td><td>✘</td><td>21</td><td>✘</td><td>✔</td><td>✘</td><td>✔</td></tr>
-<tr><td>MMLU</td><td>✘</td><td>6</td><td>✘</td><td>✔</td><td>✘</td><td>✘</td></tr>
-<tr><td>Medbullets</td><td>✘</td><td>-</td><td>✔</td><td>✔</td><td>✘</td><td>✔</td></tr>
-<tr><td>JAMA Challenge</td><td>✘</td><td>13</td><td>✔</td><td>✔</td><td>✘</td><td>✔</td></tr>
-<tr><td>LiveQA</td><td>✘</td><td>-</td><td>✘</td><td>✘</td><td>✔</td><td>✔</td></tr>
-<tr><td>ClinicBench</td><td>✘</td><td>-</td><td>✘</td><td>✔</td><td>✔</td><td>✔</td></tr>
-<tr><td><strong>Ours</strong></td><td>✔</td><td>24</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td style="text-align: left;">MMedBench</td><td style="text-align: center;"><span style="color: red">✘</span></td><td style="text-align: center;">21</td><td style="text-align: center;"><span style="color: ForestGreen">✔</span></td><td style="text-align: center;"><span style="color: ForestGreen">✔</span></td><td style="text-align: center;"><span style="color: red">✘</span></td><td style="text-align: center;"><span style="color: ForestGreen">✔</span></td></tr>
+<tr>
+<td style="text-align: left;">MedQA</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">MedMCQA</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">MMLU</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">Medbullets</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">JAMA Challenge</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">13</td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">LiveQA</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">ClinicBench</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><span style="color: red">✘</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ours</strong></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+<td style="text-align: center;"><span
+style="color: ForestGreen">✔</span></td>
+</tr>
 </tbody>
 </table>
+<p><span id="tab:Comparison with existing Medical QA benchmarks"
+data-label="tab:Comparison with existing Medical QA benchmarks"></span></p>
+</div>
 
 
 
-<h2>Medical Benchmark with Step-wise evaluation</h2>
-
-<h3>Data curation</h3>
-In this section, we detail our process for curating the data and the specifics of the dataset we collected. The dataset we curated consisted of two types: multiple-choice questions and open-ended questions. In the following, we develop a description of the process of curating each of these two types of data. 
-
-
-<h2>Figures</h2>
-
-<h3>Figure 1</h3>
+<h1 id="medical-benchmark-with-step-wise-evaluation">Medical Benchmark
+with Step-wise evaluation</h1>
+<h2 id="data-curation">Data curation</h2>
+<p>In this section, we detail our process for curating the data and the
+specifics of the dataset we collected. The dataset we curated consisted
+of two types: multiple-choice questions and open-ended questions. In the
+following, we develop a description of the process of curating each of
+these two types of data.</p>
+<figure id="t-SNE">
+<div class="minipage">
 <img src="assets/figures/distribution_mcq.png" alt="MCQ" width="600">
-
-<h3>Figure 2</h3>
 <img src="assets/figures/distribution_oeq.png" alt="OEQ" width="600">
 
+</div>
+<figcaption> </figcaption>
+</figure>
+<h3 id="data-curation-for-multiple-choice-question">Data curation for
+multiple-choice question</h3>
+<p>The data collection for our MedReason-Dx benchmark is designed to
+create a challenging reasoning dataset that diverges from typical
+knowledge-based question-answer datasets. The objective is to curate a
+dataset where models are required to perform complex, multi-step
+reasoning to derive the correct answers, reflecting the intricate
+processes involved in real-world clinical diagnostics. To achieve this,
+we employed a rigorous data selection process that involved filtering
+questions from well-established medical datasets, which encompass
+real-world clinical cases across various medical disciplines. Each
+problem is associated with a detailed series of reasoning steps that
+mirror the diagnostic workflow, ensuring that the reasoning process is
+both comprehensive and contextually relevant. We define a set of 24
+medical domains, derived from common hospital departments, including:
+"Cardiology", "Pulmonology", "Gastroenterology", "Nephrology",
+"Endocrinology", "Hematology", "Rheumatology", "Neurology", "Surgery",
+"Obstetrics and Gynecology", "Pediatrics", "Psychiatry", "Emergency
+Medicine", "Anesthesiology", "Radiology", "Otorhinolaryngology",
+"Ophthalmology", "Dermatology", "Urology", "Oncology", "Physical
+Medicine and Rehabilitation", "Nutrition", "Pain Management" and
+"Clinical Laboratory". The selection of questions prioritizes diversity
+in the types of clinical challenges and the reasoning methods required
+for problem-solving. This diversity encompasses a wide array of
+diagnostic tasks that span both common and rare clinical conditions.
+Questions are specifically chosen for their requirement of complex
+multi-step reasoning processes, including, but not limited to,
+physiological mechanism analysis, differential diagnosis, hypothesis
+testing, exclusionary reasoning, and the integration of
+cross-disciplinary knowledge. By focusing on the reasoning complexity
+and diversity, the dataset reflects the multifaceted nature of clinical
+decision-making and the diverse set of cognitive strategies employed by
+healthcare professionals in practice. The aim is to ensure that the
+dataset not only captures the breadth of medical knowledge but also
+challenges models to engage in higher-order reasoning reflective of
+real-world medical diagnostic scenarios</p>
+<p>After finalizing the selection of challenging questions, we create
+the step-by-step answers and extract key points with the help of medical
+experts from diverse specialties. This approach allows for a
+comprehensive evaluation of the model’s reasoning ability, focusing not
+only on the correctness of the final answer but also on the clarity and
+logic of the reasoning process itself. The step-by-step answers break
+down the reasoning into clear, logical steps, each representing a
+critical part of the decision-making process. The key points highlight
+the most important information, such as clinical findings or diagnostic
+considerations, necessary for reaching the correct diagnosis. These key
+points help ensure that the model’s response covers all relevant aspects
+required for accurate medical decision-making. The goal of generating
+these steps and key points is to assess the reasoning process in detail,
+ensuring that the model’s explanation is complete and logically sound.
+An example piece of data created is shown in Figure <a href="#example"
+data-reference-type="ref" data-reference="example">2</a>.</p>
+<figure id="example">
+<img src="assets/figures/example.png" style="width:90.0%" />
+<figcaption>Example question-answer pair from the MedReason-Dx dataset.</figcaption>
+</figure>
+<h3 id="data-curation-for-open-ended-question">Data curation for
+open-ended question</h3>
+<p>Multiple-choice questions often simplify the difficulty of the
+questions and fail to accurately reflect real-world scenarios, as human
+doctors can’t make diagnoses based on predefined options. Consequently,
+we further construct open-ended reasoning questions.</p>
+<div class="center">
 
+</div>
+<div class="center">
 
-<h3>Data curation for multiple-choice question</h3>
-
-
-
-
-The data collection for our MedReason-Dx benchmark is designed to create a challenging reasoning dataset that diverges from typical knowledge-based question-answer datasets. The objective is to curate a dataset where models are required to perform complex, multi-step reasoning to derive the correct answers, reflecting the intricate processes involved in real-world clinical diagnostics. To achieve this, we employed a rigorous data selection process that involved filtering questions from well-established medical datasets, which encompass real-world clinical cases across various medical disciplines. Each problem is associated with a detailed series of reasoning steps that mirror the diagnostic workflow, ensuring that the reasoning process is both comprehensive and contextually relevant. We define a set of 24 medical domains, derived from common hospital departments, including: "Cardiology", "Pulmonology", "Gastroenterology", "Nephrology", "Endocrinology", "Hematology", "Rheumatology", "Neurology", "Surgery", "Obstetrics and Gynecology", "Pediatrics", "Psychiatry", "Emergency Medicine", "Anesthesiology", "Radiology", "Otorhinolaryngology", "Ophthalmology", "Dermatology", "Urology", "Oncology", "Physical Medicine and Rehabilitation", "Nutrition", "Pain Management" and "Clinical Laboratory". The selection of questions prioritizes diversity in the types of clinical challenges and the reasoning methods required for problem-solving. This diversity encompasses a wide array of diagnostic tasks that span both common and rare clinical conditions. Questions are specifically chosen for their requirement of complex multi-step reasoning processes, including, but not limited to, physiological mechanism analysis, differential diagnosis, hypothesis testing, exclusionary reasoning, and the integration of cross-disciplinary knowledge. By focusing on the reasoning complexity and diversity, the dataset reflects the multifaceted nature of clinical decision-making and the diverse set of cognitive strategies employed by healthcare professionals in practice. The aim is to ensure that the dataset not only captures the breadth of medical knowledge but also challenges models to engage in higher-order reasoning reflective of real-world medical diagnostic scenarios
-
-After finalizing the selection of challenging questions, we create the step-by-step answers and extract key points with the help of medical experts from diverse specialties. This approach allows for a comprehensive evaluation of the model's reasoning ability, focusing not only on the correctness of the final answer but also on the clarity and logic of the reasoning process itself. The step-by-step answers break down the reasoning into clear, logical steps, each representing a critical part of the decision-making process. The key points highlight the most important information, such as clinical findings or diagnostic considerations, necessary for reaching the correct diagnosis. These key points help ensure that the model's response covers all relevant aspects required for accurate medical decision-making. The goal of generating these steps and key points is to assess the reasoning process in detail, ensuring that the model's explanation is complete and logically sound. An example piece of data created is shown in Figure~\ref{example}.
-
-
-
-<h3>Figure 3: Example question-answer pair from the MedReason-Dx dataset</h3>
-<img src="assets/figures/example.png" alt="Example QA Pair" width="800">
-
-
-
-
-<h3>Data curation for open-ended question</h3>
-
-Multiple-choice questions often simplify the difficulty of the questions and fail to accurately reflect real-world scenarios, as human doctors can't make diagnoses based on predefined options. Consequently, we further construct open-ended reasoning questions. 
-
-\begin{center}
-\fcolorbox{black}{yellow}{\parbox{13cm}{"Please revise the following multiple-choice question to an open-ended question:"}}
-\end{center}
-
-\begin{center}
-\fcolorbox{black}{yellow}{\parbox{13cm}{"You are a professional doctor, please remove the information about the wrong options from the diagnostic results based on the questions and diagnostic results given and keep only the correct results."}}
-\end{center}
-
-When rewriting the problem, we only change the last question in the problem to ensure minimal changes to the original problem. Again, we invite human experts to monitor this change to ensure that it is done correctly. Upon obtaining the open-ended questions and answers, we reformulate the answers in a STEP-BY-STEP format, similar to the approach used for multiple-choice questions. Additionally, we extract the key points from the answers to facilitate subsequent assessments.
-
-
-
-
-<h2>Evaluation</h2>
-
-As previously mentioned, in addition to emphasizing the accuracy of the final answer, we also place significant attention on the comprehensiveness of the reasoning process and the thoroughness with which the relevant keywords are captured during this process. In the following, we provide a detailed description of the evaluation metrics employed to assess these three critical aspects of our analysis.
-
-\textbf{Correctness of the final answer.} Firstly, in accordance with traditional evaluation methodologies, we assess the accuracy of the final answers provided by the model. For multiple-choice questions, we directly compare the option selected by the model with the correct one. For open-ended questions, we instruct the model to provide the answer in a specified format: "Please give your answer in the following format: "Therefore, the answer is $\backslash$box\{your answer\}." Then we use LLM to determine whether the given answer is equivalent to the correct answer and calculate accuracy.
-
-
-
-\textbf{Completeness and necessity of reasoning steps.} In addition to evaluating the correctness of the final answers, we also assess the completeness and necessity of the model’s reasoning process. While current evaluations of large medical models typically emphasize the correctness of the results, it is crucial to recognize that, in high-stakes domains such as medicine, the transparency and rationality of the model's reasoning process are equally important. This is because physicians rely on the reasoning behind the model’s conclusions to assess the reliability of the final results. Therefore, we also conduct a thorough evaluation of the model's reasoning process to ensure its robustness and interpretability.
-
-\textbf{Completeness of keywords.} In addition to assessing the model's reasoning process, we also evaluate the completeness of the keywords involved in its reasoning.
-
-
-<h2>Experiments</h2>
-In this section, we will show the detailed experimental setup, analyses, and results of different LLMs in our benchmark. The dataset is still being refined, and more results will be released soon. 
-
-<h3>Experimental Setup</h3>
-\textbf{Evaluation Models.} To provide a comprehensive benchmark, We conduct evaluations on 11 advanced LLMs, comprising 7 general LLMs and 4 medical LLMs, including DeepSeeK R1~\citep{guo2025deepseek}, DeepSeek V3~\citep{liu2024deepseek}, GPT-4o~\citep{gpt-4o}, o1-mini~\citep{o1-mini} and  Baichuan4-Turbo~\citep{yang2023baichuan}. It is important to note that our experiments are still ongoing and the results are being continuously refined, with additional evaluation data expected to be updated in the near future.
-
-\textbf{Implementation Details.} Following previous work~\citep{jiang2025mme}, we leverage two types of prompts to guide the model to give answers: chain-of-thought prompts~\citep{DBLP:conf/nips/Wei0SBIXCLZ22} and direct prompts.  Chain-of-thought prompts have the following format: \textit{'Give your answer in the following form with clear logic: Step1: Step2:.... . Therefore, the answer is \textbackslash box\{\}.'} and direct prompts have the following format: \textit{'Please answer the following question and end your answer in this format: Therefore, the answer is \textbackslash box\{\}.'}. When calling LLMs, the temperature is set to 0.7, Top-P is set to 0.9, and max tokens is set to 1000.
-
-<h3>Benchmarking Medical LLMs</h3>
-We benchmarked several advanced language models on the MedReason-Dx dataset under two prompting settings: Chain-of-Thought (CoT) and Direct Answering, across both multiple-choice and open-ended formats. Overall, DeepSeek-R1 achieved the highest performance in the multiple-choice setting, with CoT prompting slightly outperforming direct answering (65.03\% vs. 64.36\%). However, in the open-ended setting, its performance reversed, with direct prompting yielding higher accuracy (42.39\%) than CoT (40.14\%). DeepSeek-V3 showed a similar trend with modest gains from direct answering in open-ended questions (37.02\% vs. 33.56\%). Interestingly, GPT-4o exhibited the largest gap in favor of direct prompting for open-ended questions (47.70\% vs. 37.72\%), while maintaining comparable results in multiple-choice settings. o1-mini demonstrated relatively balanced performance across settings, with a slight edge for direct prompting in both question types. In contrast, Baichuan4-Turbo underperformed across all configurations, with particularly low scores on open-ended questions, indicating a significant gap in step-by-step reasoning capabilities compared to stronger models. These results suggest that while CoT prompting can provide marginal gains in structured formats, direct answering may be more effective in complex open-ended clinical scenarios, particularly for stronger LLMs.
-
-
-<h2>Table 2: Benchmarking the accuracy (%) performance of existing models</h2>
-<table border="1" cellspacing="0" cellpadding="5">
+</div>
+<p>When rewriting the problem, we only change the last question in the
+problem to ensure minimal changes to the original problem. Again, we
+invite human experts to monitor this change to ensure that it is done
+correctly. Upon obtaining the open-ended questions and answers, we
+reformulate the answers in a STEP-BY-STEP format, similar to the
+approach used for multiple-choice questions. Additionally, we extract
+the key points from the answers to facilitate subsequent
+assessments.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p>As previously mentioned, in addition to emphasizing the accuracy of
+the final answer, we also place significant attention on the
+comprehensiveness of the reasoning process and the thoroughness with
+which the relevant keywords are captured during this process. In the
+following, we provide a detailed description of the evaluation metrics
+employed to assess these three critical aspects of our analysis.</p>
+<p><strong>Correctness of the final answer.</strong> Firstly, in
+accordance with traditional evaluation methodologies, we assess the
+accuracy of the final answers provided by the model. For multiple-choice
+questions, we directly compare the option selected by the model with the
+correct one. For open-ended questions, we instruct the model to provide
+the answer in a specified format: "Please give your answer in the
+following format: "Therefore, the answer is <span
+class="math inline">∖</span>box{your answer}." Then we use LLM to
+determine whether the given answer is equivalent to the correct answer
+and calculate accuracy.</p>
+<p><strong>Completeness and necessity of reasoning steps.</strong> In
+addition to evaluating the correctness of the final answers, we also
+assess the completeness and necessity of the model’s reasoning process.
+While current evaluations of large medical models typically emphasize
+the correctness of the results, it is crucial to recognize that, in
+high-stakes domains such as medicine, the transparency and rationality
+of the model’s reasoning process are equally important. This is because
+physicians rely on the reasoning behind the model’s conclusions to
+assess the reliability of the final results. Therefore, we also conduct
+a thorough evaluation of the model’s reasoning process to ensure its
+robustness and interpretability.</p>
+<p><strong>Completeness of keywords.</strong> In addition to assessing
+the model’s reasoning process, we also evaluate the completeness of the
+keywords involved in its reasoning.</p>
+<h1 id="experiments">Experiments</h1>
+<p>In this section, we will show the detailed experimental setup,
+analyses, and results of different LLMs in our benchmark. The dataset is
+still being refined, and more results will be released soon.</p>
+<h2 id="experimental-setup">Experimental Setup</h2>
+<p><strong>Evaluation Models.</strong> To provide a comprehensive
+benchmark, We conduct evaluations on 11 advanced LLMs, comprising 7
+general LLMs and 4 medical LLMs, including DeepSeeK R1 <span
+class="citation" data-cites="guo2025deepseek">(Guo et al. 2025)</span>,
+DeepSeek V3 <span class="citation" data-cites="liu2024deepseek">(Liu et
+al. 2024)</span>, GPT-4o <span class="citation"
+data-cites="gpt-4o">(OpenAI 2024a)</span>, o1-mini <span
+class="citation" data-cites="o1-mini">(OpenAI 2024b)</span> and
+Baichuan4-Turbo <span class="citation" data-cites="yang2023baichuan">(A.
+Yang et al. 2023)</span>. It is important to note that our experiments
+are still ongoing and the results are being continuously refined, with
+additional evaluation data expected to be updated in the near
+future.</p>
+<p><strong>Implementation Details.</strong> Following previous
+work <span class="citation" data-cites="jiang2025mme">(Jiang et al.
+2025)</span>, we leverage two types of prompts to guide the model to
+give answers: chain-of-thought prompts <span class="citation"
+data-cites="DBLP:conf/nips/Wei0SBIXCLZ22">(Wei et al. 2022)</span> and
+direct prompts. Chain-of-thought prompts have the following format:
+<em>’Give your answer in the following form with clear logic: Step1:
+Step2:.... . Therefore, the answer is \box{}.’</em> and direct prompts
+have the following format: <em>’Please answer the following question and
+end your answer in this format: Therefore, the answer is \box{}.’</em>.
+When calling LLMs, the temperature is set to 0.7, Top-P is set to 0.9,
+and max tokens is set to 1000.</p>
+<h2 id="benchmarking-medical-llms">Benchmarking Medical LLMs</h2>
+<div class="table*">
+<table>
+  <caption>Table 2: Benchmarking the accuracy (%) performance of existing models</caption>
 <thead>
 <tr>
-  <th>Model</th><th>MCQ CoT</th><th>MCQ Direct</th><th>OEQ CoT</th><th>OEQ Direct</th>
+<th style="text-align: center;"></th>
+<th colspan="2" style="text-align: center;">multiple-choice</th>
+<th colspan="2" style="text-align: center;">open-ended</th>
 </tr>
 </thead>
 <tbody>
-<tr><td>DeepSeeK R1</td><td>65.03</td><td>64.36</td><td>40.14</td><td>42.39</td></tr>
-<tr><td>DeepSeeK V3</td><td>60.47</td><td>59.79</td><td>33.56</td><td>37.02</td></tr>
-<tr><td>GPT-4o</td><td>58.28</td><td>59.12</td><td>37.72</td><td>47.70</td></tr>
-<tr><td>o1-mini</td><td>60.47</td><td>62.67</td><td>37.37</td><td>41.18</td></tr>
-<tr><td>Baichuan4-Turbo</td><td>46.62</td><td>42.74</td><td>27.16</td><td>28.37</td></tr>
+<tr>
+<td style="text-align: center;"><span>2-3</span>
+(l)<span>4-5</span></td>
+<td style="text-align: left;">CoT</td>
+<td style="text-align: left;">Direct</td>
+<td style="text-align: left;">CoT</td>
+<td style="text-align: left;">Direct</td>
+</tr>
+<tr>
+<td style="text-align: center;">DeepSeeK R1</td>
+<td style="text-align: left;">65.03</td>
+<td style="text-align: left;">64.36</td>
+<td style="text-align: left;">40.14</td>
+<td style="text-align: left;">42.39</td>
+</tr>
+<tr>
+<td style="text-align: center;">DeepSeeK V3</td>
+<td style="text-align: left;">60.47</td>
+<td style="text-align: left;">59.79</td>
+<td style="text-align: left;">33.56</td>
+<td style="text-align: left;">37.02</td>
+</tr>
+<tr>
+<td style="text-align: center;">GPT-4o</td>
+<td style="text-align: left;">58.28</td>
+<td style="text-align: left;">59.12</td>
+<td style="text-align: left;">37.72</td>
+<td style="text-align: left;">47.70</td>
+</tr>
+<tr>
+<td style="text-align: center;">o1-mini</td>
+<td style="text-align: left;">60.47</td>
+<td style="text-align: left;">62.67</td>
+<td style="text-align: left;">37.37</td>
+<td style="text-align: left;">41.18</td>
+</tr>
+<tr>
+<td style="text-align: center;">Baichuan4-Turbo</td>
+<td style="text-align: left;">46.62</td>
+<td style="text-align: left;">42.74</td>
+<td style="text-align: left;">27.16</td>
+<td style="text-align: left;">28.37</td>
+</tr>
 </tbody>
 </table>
-
-    
-<h2>Conclusion</h2>
-In this work, we introduce MedReason-Dx, a benchmark designed to evaluate the quality of reasoning in medical question answering, beyond mere answer accuracy. MedReason-Dx incorporates expert-annotated, step-by-step rationales across diverse medical domains, enabling systematic assessment of logical coherence, interpretability, and clinical reasoning reliability in large language models. By addressing key limitations in existing medical AI evaluation practices, our benchmark provides a robust foundation for developing models that reason transparently and reliably.
-
-    
+<p><span id="tab:Benchmarking the accuracy"
+data-label="tab:Benchmarking the accuracy"></span></p>
+</div>
+<p>We benchmarked several advanced language models on the MedReason-Dx
+dataset under two prompting settings: Chain-of-Thought (CoT) and Direct
+Answering, across both multiple-choice and open-ended formats. Overall,
+DeepSeek-R1 achieved the highest performance in the multiple-choice
+setting, with CoT prompting slightly outperforming direct answering
+(65.03% vs. 64.36%). However, in the open-ended setting, its performance
+reversed, with direct prompting yielding higher accuracy (42.39%) than
+CoT (40.14%). DeepSeek-V3 showed a similar trend with modest gains from
+direct answering in open-ended questions (37.02% vs. 33.56%).
+Interestingly, GPT-4o exhibited the largest gap in favor of direct
+prompting for open-ended questions (47.70% vs. 37.72%), while
+maintaining comparable results in multiple-choice settings. o1-mini
+demonstrated relatively balanced performance across settings, with a
+slight edge for direct prompting in both question types. In contrast,
+Baichuan4-Turbo underperformed across all configurations, with
+particularly low scores on open-ended questions, indicating a
+significant gap in step-by-step reasoning capabilities compared to
+stronger models. These results suggest that while CoT prompting can
+provide marginal gains in structured formats, direct answering may be
+more effective in complex open-ended clinical scenarios, particularly
+for stronger LLMs.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>In this work, we introduce MedReason-Dx, a benchmark designed to
+evaluate the quality of reasoning in medical question answering, beyond
+mere answer accuracy. MedReason-Dx incorporates expert-annotated,
+step-by-step rationales across diverse medical domains, enabling
+systematic assessment of logical coherence, interpretability, and
+clinical reasoning reliability in large language models. By addressing
+key limitations in existing medical AI evaluation practices, our
+benchmark provides a robust foundation for developing models that reason
+transparently and reliably.</p>
+<div id="refs" class="references csl-bib-body hanging-indent"
+data-entry-spacing="0" role="list">
+<div id="ref-cai2024medbench" class="csl-entry" role="listitem">
+Cai, Yan, Linlin Wang, Ye Wang, Gerard de Melo, Ya Zhang, Yanfeng Wang,
+and Liang He. 2024. <span>“Medbench: A Large-Scale Chinese Benchmark for
+Evaluating Medical Large Language Models.”</span> In <em>Proceedings of
+the AAAI Conference on Artificial Intelligence</em>, 38:17709–17. 16.
+</div>
+<div id="ref-chen2023huatuogpt" class="csl-entry" role="listitem">
+Chen, Junying, Xidong Wang, Ke Ji, Anningzhe Gao, Feng Jiang, Shunian
+Chen, Hongbo Zhang, et al. 2023. <span>“Huatuogpt-Ii, One-Stage Training
+for Medical Adaption of Llms.”</span> <em>arXiv Preprint
+arXiv:2311.09774</em>.
+</div>
+<div id="ref-chiang2023can" class="csl-entry" role="listitem">
+Chiang, Cheng-Han, and Hung-yi Lee. 2023. <span>“Can Large Language
+Models Be an Alternative to Human Evaluations?”</span> <em>arXiv
+Preprint arXiv:2305.01937</em>.
+</div>
+<div id="ref-gu2021domain" class="csl-entry" role="listitem">
+Gu, Yu, Robert Tinn, Hao Cheng, Michael Lucas, Naoto Usuyama, Xiaodong
+Liu, Tristan Naumann, Jianfeng Gao, and Hoifung Poon. 2021.
+<span>“Domain-Specific Language Model Pretraining for Biomedical Natural
+Language Processing.”</span> <em>ACM Transactions on Computing for
+Healthcare (HEALTH)</em> 3 (1): 1–23.
+</div>
+<div id="ref-guo2025deepseek" class="csl-entry" role="listitem">
+Guo, Daya, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin
+Xu, Qihao Zhu, et al. 2025. <span>“Deepseek-R1: Incentivizing Reasoning
+Capability in Llms via Reinforcement Learning.”</span> <em>arXiv
+Preprint arXiv:2501.12948</em>.
+</div>
+<div id="ref-han2023medalpaca" class="csl-entry" role="listitem">
+Han, Tianyu, Lisa C Adams, Jens-Michalis Papaioannou, Paul Grundmann,
+Tom Oberhauser, Alexander Löser, Daniel Truhn, and Keno K Bressem. 2023.
+<span>“MedAlpaca–an Open-Source Collection of Medical Conversational AI
+Models and Training Data.”</span> <em>arXiv Preprint
+arXiv:2304.08247</em>.
+</div>
+<div id="ref-jiang2025mme" class="csl-entry" role="listitem">
+Jiang, Dongzhi, Renrui Zhang, Ziyu Guo, Yanwei Li, Yu Qi, Xinyan Chen,
+Liuhui Wang, et al. 2025. <span>“MME-CoT: Benchmarking Chain-of-Thought
+in Large Multimodal Models for Reasoning Quality, Robustness, and
+Efficiency.”</span> <em>arXiv Preprint arXiv:2502.09621</em>.
+</div>
+<div id="ref-jin2021disease" class="csl-entry" role="listitem">
+Jin, Di, Eileen Pan, Nassim Oufattole, Wei-Hung Weng, Hanyi Fang, and
+Peter Szolovits. 2021. <span>“What Disease Does This Patient Have? A
+Large-Scale Open Domain Question Answering Dataset from Medical
+Exams.”</span> <em>Applied Sciences</em> 11 (14): 6421.
+</div>
+<div id="ref-jin2019pubmedqa" class="csl-entry" role="listitem">
+Jin, Qiao, Bhuwan Dhingra, Zhengping Liu, William W Cohen, and Xinghua
+Lu. 2019. <span>“Pubmedqa: A Dataset for Biomedical Research Question
+Answering.”</span> <em>arXiv Preprint arXiv:1909.06146</em>.
+</div>
+<div id="ref-johnson2019mimic" class="csl-entry" role="listitem">
+Johnson, Alistair EW, Tom J Pollard, Seth J Berkowitz, Nathaniel R
+Greenbaum, Matthew P Lungren, Chih-ying Deng, Roger G Mark, and Steven
+Horng. 2019. <span>“MIMIC-CXR, a de-Identified Publicly Available
+Database of Chest Radiographs with Free-Text Reports.”</span>
+<em>Scientific Data</em> 6 (1): 317.
+</div>
+<div id="ref-johnson2016mimic" class="csl-entry" role="listitem">
+Johnson, Alistair EW, Tom J Pollard, Lu Shen, Li-wei H Lehman, Mengling
+Feng, Mohammad Ghassemi, Benjamin Moody, Peter Szolovits, Leo Anthony
+Celi, and Roger G Mark. 2016. <span>“MIMIC-III, a Freely Accessible
+Critical Care Database.”</span> <em>Scientific Data</em> 3 (1): 1–9.
+</div>
+<div id="ref-karimi2015cadec" class="csl-entry" role="listitem">
+Karimi, Sarvnaz, Alejandro Metke-Jimenez, Madonna Kemp, and Chen Wang.
+2015. <span>“Cadec: A Corpus of Adverse Drug Event Annotations.”</span>
+<em>Journal of Biomedical Informatics</em> 55: 73–81.
+</div>
+<div id="ref-kim2003genia" class="csl-entry" role="listitem">
+Kim, J-D, Tomoko Ohta, Yuka Tateisi, and Jun’ichi Tsujii. 2003.
+<span>“GENIA Corpus—a Semantically Annotated Corpus for
+Bio-Textmining.”</span> <em>Bioinformatics</em> 19 (suppl_1): i180–82.
+</div>
+<div id="ref-lee2020biobert" class="csl-entry" role="listitem">
+Lee, Jinhyuk, Wonjin Yoon, Sungdong Kim, Donghyeon Kim, Sunkyu Kim, Chan
+Ho So, and Jaewoo Kang. 2020. <span>“BioBERT: A Pre-Trained Biomedical
+Language Representation Model for Biomedical Text Mining.”</span>
+<em>Bioinformatics</em> 36 (4): 1234–40.
+</div>
+<div id="ref-li2023huatuo" class="csl-entry" role="listitem">
+Li, Jianquan, Xidong Wang, Xiangbo Wu, Zhiyi Zhang, Xiaolong Xu, Jie Fu,
+Prayag Tiwari, Xiang Wan, and Benyou Wang. 2023. <span>“Huatuo-26m, a
+Large-Scale Chinese Medical Qa Dataset.”</span> <em>arXiv Preprint
+arXiv:2305.01526</em>.
+</div>
+<div id="ref-li2016biocreative" class="csl-entry" role="listitem">
+Li, Jiao, Yueping Sun, Robin J Johnson, Daniela Sciaky, Chih-Hsuan Wei,
+Robert Leaman, Allan Peter Davis, Carolyn J Mattingly, Thomas C Wiegers,
+and Zhiyong Lu. 2016. <span>“BioCreative v CDR Task Corpus: A Resource
+for Chemical Disease Relation Extraction.”</span> <em>Database</em>
+2016.
+</div>
+<div id="ref-li2023chatdoctor" class="csl-entry" role="listitem">
+Li, Yunxiang, Zihan Li, Kai Zhang, Ruilong Dan, Steve Jiang, and You
+Zhang. 2023. <span>“Chatdoctor: A Medical Chat Model Fine-Tuned on a
+Large Language Model Meta-Ai (Llama) Using Medical Domain
+Knowledge.”</span> <em>Cureus</em> 15 (6).
+</div>
+<div id="ref-liao2023automatic" class="csl-entry" role="listitem">
+Liao, Yusheng, Yutong Meng, Hongcheng Liu, Yanfeng Wang, and Yu Wang.
+2023. <span>“An Automatic Evaluation Framework for Multi-Turn Medical
+Consultations Capabilities of Large Language Models.”</span> <em>arXiv
+Preprint arXiv:2309.02077</em>.
+</div>
+<div id="ref-lievin2024can" class="csl-entry" role="listitem">
+Liévin, Valentin, Christoffer Egeberg Hother, Andreas Geert Motzfeldt,
+and Ole Winther. 2024. <span>“Can Large Language Models Reason about
+Medical Questions?”</span> <em>Patterns</em> 5 (3).
+</div>
+<div id="ref-liu2024deepseek" class="csl-entry" role="listitem">
+Liu, Aixin, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu, Chengda Lu,
+Chenggang Zhao, et al. 2024. <span>“Deepseek-V3 Technical
+Report.”</span> <em>arXiv Preprint arXiv:2412.19437</em>.
+</div>
+<div id="ref-lu2022clinicalt5" class="csl-entry" role="listitem">
+Lu, Qiuhao, Dejing Dou, and Thien Nguyen. 2022. <span>“ClinicalT5: A
+Generative Language Model for Clinical Text.”</span> In <em>Findings of
+the Association for Computational Linguistics: EMNLP 2022</em>, 5436–43.
+</div>
+<div id="ref-luo2024taiyi" class="csl-entry" role="listitem">
+Luo, Ling, Jinzhong Ning, Yingwen Zhao, Zhijun Wang, Zeyuan Ding, Peng
+Chen, Weiru Fu, et al. 2024. <span>“Taiyi: A Bilingual Fine-Tuned Large
+Language Model for Diverse Biomedical Tasks.”</span> <em>Journal of the
+American Medical Informatics Association</em> 31 (9): 1865–74.
+</div>
+<div id="ref-moor2023med" class="csl-entry" role="listitem">
+Moor, Michael, Qian Huang, Shirley Wu, Michihiro Yasunaga, Yash Dalmia,
+Jure Leskovec, Cyril Zakka, Eduardo Pontes Reis, and Pranav Rajpurkar.
+2023. <span>“Med-Flamingo: A Multimodal Medical Few-Shot
+Learner.”</span> In <em>Machine Learning for Health (ML4H)</em>, 353–67.
+PMLR.
+</div>
+<div id="ref-nori2023capabilities" class="csl-entry" role="listitem">
+Nori, Harsha, Nicholas King, Scott Mayer McKinney, Dean Carignan, and
+Eric Horvitz. 2023. <span>“Capabilities of Gpt-4 on Medical Challenge
+Problems.”</span> <em>arXiv Preprint arXiv:2303.13375</em>.
+</div>
+<div id="ref-gpt-4o" class="csl-entry" role="listitem">
+OpenAI. 2024a. <span>“Hello GPT-4o.”</span> <em><a
+href="https://openai.com/index/hello-gpt-4o/"
+class="uri">Https://Openai.com/Index/Hello-Gpt-4o/</a></em>.
+</div>
+<div id="ref-o1-mini" class="csl-entry" role="listitem">
+———. 2024b. <span>“Learning to Reason with Llms.”</span> <em><a
+href="https://openai.com/index/learning-to-reason-with-llms/"
+class="uri">Https://Openai.com/Index/Learning-to-Reason-with-Llms/</a></em>.
+</div>
+<div id="ref-peng2023study" class="csl-entry" role="listitem">
+Peng, Cheng, Xi Yang, Aokun Chen, Kaleb E Smith, Nima PourNejatian,
+Anthony B Costa, Cheryl Martin, et al. 2023. <span>“A Study of
+Generative Large Language Model for Medical Research and
+Healthcare.”</span> <em>NPJ Digital Medicine</em> 6 (1): 210.
+</div>
+<div id="ref-romanov2018lessons" class="csl-entry" role="listitem">
+Romanov, Alexey, and Chaitanya Shivade. 2018. <span>“Lessons from
+Natural Language Inference in the Clinical Domain.”</span> <em>arXiv
+Preprint arXiv:1808.06752</em>.
+</div>
+<div id="ref-saab2024capabilities" class="csl-entry" role="listitem">
+Saab, Khaled, Tao Tu, Wei-Hung Weng, Ryutaro Tanno, David Stutz, Ellery
+Wulczyn, Fan Zhang, et al. 2024. <span>“Capabilities of Gemini Models in
+Medicine.”</span> <em>arXiv Preprint arXiv:2404.18416</em>.
+</div>
+<div id="ref-shi2023llm" class="csl-entry" role="listitem">
+Shi, Xiaoming, Jie Xu, Jinru Ding, Jiali Pang, Sichen Liu, Shuqing Luo,
+Xingwei Peng, et al. 2023. <span>“Llm-Mini-Cex: Automatic Evaluation of
+Large Language Model for Diagnostic Conversation.”</span> <em>arXiv
+Preprint arXiv:2308.07635</em>.
+</div>
+<div id="ref-singhal2023large" class="csl-entry" role="listitem">
+Singhal, Karan, Shekoofeh Azizi, Tao Tu, S Sara Mahdavi, Jason Wei,
+Hyung Won Chung, Nathan Scales, et al. 2023. <span>“Large Language
+Models Encode Clinical Knowledge.”</span> <em>Nature</em> 620 (7972):
+172–80.
+</div>
+<div id="ref-singhal2025toward" class="csl-entry" role="listitem">
+Singhal, Karan, Tao Tu, Juraj Gottweis, Rory Sayres, Ellery Wulczyn,
+Mohamed Amin, Le Hou, et al. 2025. <span>“Toward Expert-Level Medical
+Question Answering with Large Language Models.”</span> <em>Nature
+Medicine</em>, 1–8.
+</div>
+<div id="ref-taylor2022galactica" class="csl-entry" role="listitem">
+Taylor, Ross, Marcin Kardas, Guillem Cucurull, Thomas Scialom, Anthony
+Hartshorn, Elvis Saravia, Andrew Poulton, Viktor Kerkez, and Robert
+Stojnic. 2022. <span>“Galactica: A Large Language Model for
+Science.”</span> <em>arXiv Preprint arXiv:2211.09085</em>.
+</div>
+<div id="ref-wang2020cord" class="csl-entry" role="listitem">
+Wang, Lucy Lu, Kyle Lo, Yoganand Chandrasekhar, Russell Reas, Jiangjiang
+Yang, Douglas Burdick, Darrin Eide, et al. 2020. <span>“Cord-19: The
+Covid-19 Open Research Dataset.”</span> <em>ArXiv</em>, arXiv–2004.
+</div>
+<div id="ref-DBLP:conf/nips/Wei0SBIXCLZ22" class="csl-entry"
+role="listitem">
+Wei, Jason, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter,
+Fei Xia, Ed H. Chi, Quoc V. Le, and Denny Zhou. 2022.
+<span>“Chain-of-Thought Prompting Elicits Reasoning in Large Language
+Models.”</span> In <em>Advances in Neural Information Processing Systems
+35</em>.
+</div>
+<div id="ref-wu2023pmc" class="csl-entry" role="listitem">
+Wu, Chaoyi, Xiaoman Zhang, Ya Zhang, Yanfeng Wang, and Weidi Xie. 2023.
+<span>“Pmc-Llama: Further Finetuning Llama on Medical Papers.”</span>
+<em>arXiv Preprint arXiv:2304.14454</em> 2 (5): 6.
+</div>
+<div id="ref-wu2025medreason" class="csl-entry" role="listitem">
+Wu, Juncheng, Wenlong Deng, Xingxuan Li, Sheng Liu, Taomian Mi, Yifan
+Peng, Ziyang Xu, et al. 2025. <span>“MedReason: Eliciting Factual
+Medical Reasoning Steps in LLMs via Knowledge Graphs.”</span> <em>arXiv
+Preprint arXiv:2504.00993</em>.
+</div>
+<div id="ref-xia2022lingyi" class="csl-entry" role="listitem">
+Xia, Fei, Bin Li, Yixuan Weng, Shizhu He, Kang Liu, Bin Sun, Shutao Li,
+and Jun Zhao. 2022. <span>“LingYi: Medical Conversational Question
+Answering System Based on Multi-Modal Knowledge Graphs.”</span>
+<em>arXiv Preprint arXiv:2204.09220</em>.
+</div>
+<div id="ref-xu2023medgpteval" class="csl-entry" role="listitem">
+Xu, Jie, Lu Lu, Sen Yang, Bilin Liang, Xinwei Peng, Jiali Pang, Jinru
+Ding, et al. 2023. <span>“Medgpteval: A Dataset and Benchmark to
+Evaluate Responses of Large Language Models in Medicine.”</span>
+<em>arXiv Preprint arXiv:2305.07340</em>.
+</div>
+<div id="ref-yang2023baichuan" class="csl-entry" role="listitem">
+Yang, Aiyuan, Bin Xiao, Bingning Wang, Borong Zhang, Ce Bian, Chao Yin,
+Chenxu Lv, et al. 2023. <span>“Baichuan 2: Open Large-Scale Language
+Models.”</span> <em>arXiv Preprint arXiv:2309.10305</em>.
+</div>
+<div id="ref-yang2024zhongjing" class="csl-entry" role="listitem">
+Yang, Songhua, Hanjie Zhao, Senbin Zhu, Guangyu Zhou, Hongfei Xu,
+Yuxiang Jia, and Hongying Zan. 2024. <span>“Zhongjing: Enhancing the
+Chinese Medical Capabilities of Large Language Model Through Expert
+Feedback and Real-World Multi-Turn Dialogue.”</span> In <em>Proceedings
+of the AAAI Conference on Artificial Intelligence</em>, 38:19368–76. 17.
+</div>
+<div id="ref-yang2022gatortron" class="csl-entry" role="listitem">
+Yang, Xi, Aokun Chen, Nima PourNejatian, Hoo Chang Shin, Kaleb E Smith,
+Christopher Parisien, Colin Compas, et al. 2022. <span>“Gatortron: A
+Large Clinical Language Model to Unlock Patient Information from
+Unstructured Electronic Health Records.”</span> <em>arXiv Preprint
+arXiv:2203.03540</em>.
+</div>
+<div id="ref-zhang2023huatuogpt" class="csl-entry" role="listitem">
+Zhang, Hongbo, Junying Chen, Feng Jiang, Fei Yu, Zhihong Chen, Jianquan
+Li, Guiming Chen, et al. 2023. <span>“Huatuogpt, Towards Taming Language
+Model to Be a Doctor.”</span> <em>arXiv Preprint arXiv:2305.15075</em>.
+</div>
+</div>
 </body>
 </html>
