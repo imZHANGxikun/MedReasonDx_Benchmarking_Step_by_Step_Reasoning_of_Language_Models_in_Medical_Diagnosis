@@ -4,6 +4,8 @@
 
 This is the official repository of the benchmark 'MedReason-Dx: Benchmarking Step-by-Step Reasoning of Language Models in Medical Diagnosis', which is currently available via 'https://imzhangxikun.github.io/MedReasonDx_Benchmarking_Step_by_Step_Reasoning_of_Language_Models_in_Medical_Diagnosis/'.
 
+A PDF version is also attached in this repository.
+
 The Benchmark is still being refined. More results, as well as the accompanying scripts and data, will be released soon.
 
 If you would like to cite our paper, please cite as follows:
